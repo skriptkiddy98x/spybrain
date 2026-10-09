@@ -1,0 +1,37 @@
+# Allowlist: everything is ignored unless it is listed below, so nothing private (scan reports,
+# API keys, settings, models, build output, a virtual environment) can reach GitHub by accident.
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/CHANGELOG.md
+!/QUICKSTART.txt
+!/THIRD_PARTY_NOTICES.md
+!/SpyBrain.spec
+!/build.ps1
+!/start.bat
+!/osint.bat
+!/requirements.txt
+!/requirements-lock.txt
+!/app.py
+!/osinthub.py
+!/geolocate.py
+!/leaks.py
+!/assets/
+!/docs/
+!/licenses/
+!/tests/
+
+# PhoneInfoga (GPL-3.0) is a separate program; bin/README.md says where to get it.
+!/bin/
+/bin/*
+!/bin/README.md
+
+# Never, anywhere, even inside the allowed folders.
+__pycache__/
+*.pyc
+*.log
+keys.dat
+*.env
+.env
+reports/

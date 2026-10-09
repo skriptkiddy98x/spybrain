@@ -1,0 +1,14 @@
+PySide6-Essentials==6.12.0
+ExifRead==3.5.1
+phonenumbers==9.0.41
+Pillow==12.3.0
+dnspython==2.8.0
+psutil==7.2.2
+sherlock-project==0.16.2
+maigret==0.6.6
+theHarvester==4.11.1
+geoclip==1.2.3
+torch==2.14.1
+torchvision==0.29.1
+transformers==5.19.0
+anthropic==1.12.1

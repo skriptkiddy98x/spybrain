@@ -1,0 +1,52 @@
+SPYBRAIN 2.2 — WINDOWS
+
+1. Unzip the whole SpyBrain folder to a place of your choice.
+2. Double-click SpyBrain.exe. Keep the EXE inside its folder.
+3. Enter a target, keep the type on auto-detect or pick one, and press Run scan.
+
+FOR LAWFUL, AUTHORIZED INVESTIGATIONS ONLY. SpyBrain is for journalists,
+investigators and threat-intelligence teams. Protect the personal data you
+collect. Findings are leads, not proof: verify every one by hand.
+
+You don't need to install Python. The _internal folder holds the libraries and
+tools, so it has to stay next to the EXE.
+
+SCAN page
+Quick scan is the default. Deep scan checks more sites and can take several
+minutes. Findings appear as each source finishes, and the radar shows every
+source and what it found. Stop saves the results that are already finished.
+Targets: username, domain, email, phone number or a photo file (its metadata).
+Email: the whole address is checked in known breaches (Leaks); the name before
+@ is searched as a username; a company domain is checked too. The mailbox and
+its owner aren't verified.
+
+PHOTO page
+Choose a photo and press Analyze photo. GeoCLIP estimates where it was taken. It
+runs on this computer: no key, no internet after a one-time model download, and
+the photo is never uploaded. The first use downloads a 1.7 GB model and prepares
+the places once, which can take a few minutes; after that a photo takes about
+half a minute. Estimates usually find the right region, rarely the exact spot.
+If the photo already stores GPS, it is marked on the map for comparison.
+
+LEAKS page
+- Email: which known breaches expose the address, when, and what they leaked.
+  Free source: XposedOrNot (about 25 checks an hour). Add a Have I Been Pwned key
+  (Set HIBP key) for a second source.
+- Password: is it in known breaches? It never leaves this computer; only a
+  5-character hash prefix is sent. Nothing is saved.
+Leaked passwords and records are never shown or saved. "No breaches found"
+doesn't mean an address is safe.
+
+History and reports:
+%LOCALAPPDATA%\SpyBrain\reports
+Open reports folder on the History page opens it too.
+
+Export saves a copy as HTML, JSON or CSV. You can print the HTML report or save
+it as PDF from your browser. Double-click a link in the table to open its page.
+
+Names with a dot: if one is detected as a domain, set the type to Username.
+Phone numbers without a country code are treated as Slovak.
+If a source fails, the others keep going. Details are in Run log.
+
+Source contains the interface and adapter code, tests and build steps.
+Component licenses are in licenses and THIRD_PARTY_NOTICES.md.
