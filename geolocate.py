@@ -77,16 +77,20 @@ SCHEMA = {"type": "object", "additionalProperties": False, "required": ["clues",
 class EngineError(Exception):
     """A message that can be shown to the user as-is."""
 
-# ---- Keys, stored with Windows DPAPI so only this Windows account can read them.
+# ---- API keys.
+# Windows: encrypted with DPAPI so only this account can read them. Other platforms:
+# stored base64-encoded in keys.dat, which (with its folder) is made readable only by
+# this user account (0600/0700), since DPAPI isn't available there.
 
 def user_dir():
-    """Shared by the EXE and the source checkout, so keys and the model are set up once."""
+    """Shared by the app and the source checkout, so keys and the model are set up once."""
     return hub.APP_DIR
 
 def _keys_file():
     return user_dir() / "keys.dat"
 
 def _dpapi(data: bytes, protect: bool) -> bytes:
+    """Protect or unprotect bytes with the Windows DPAPI. Only called on Windows."""
     import ctypes
     from ctypes import wintypes
     class Blob(ctypes.Structure):
@@ -101,6 +105,18 @@ def _dpapi(data: bytes, protect: bool) -> bytes:
     finally:
         ctypes.windll.kernel32.LocalFree(ctypes.cast(result.pbData, ctypes.c_void_p))
 
+def _protect(raw: bytes) -> str:
+    """Turn a key's raw bytes into the string stored in keys.dat."""
+    data = _dpapi(raw, True) if os.name == "nt" else raw
+    return base64.b64encode(data).decode("ascii")
+
+def _unprotect(stored: str) -> str:
+    """Recover a key from the string stored in keys.dat."""
+    data = base64.b64decode(stored)
+    if os.name == "nt":
+        data = _dpapi(data, False)
+    return data.decode("utf-8")
+
 def _read_keys():
     try:
         return json.loads(_keys_file().read_text(encoding="utf-8"))
@@ -112,18 +128,29 @@ def load_key(service):
     if not stored:
         return ""
     try:
-        return _dpapi(base64.b64decode(stored), False).decode("utf-8")
+        return _unprotect(stored)
     except (OSError, ValueError):
         return ""
 
 def save_key(service, value):
     keys = _read_keys()
     if value:
-        keys[service] = base64.b64encode(_dpapi(value.strip().encode("utf-8"), True)).decode("ascii")
+        keys[service] = _protect(value.strip().encode("utf-8"))
     else:
         keys.pop(service, None)
-    _keys_file().parent.mkdir(parents=True, exist_ok=True)
-    _keys_file().write_text(json.dumps(keys), encoding="utf-8")
+    path = _keys_file()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if os.name != "nt":
+        try:  # keep the data folder private to this user
+            os.chmod(path.parent, 0o700)
+        except OSError:
+            pass
+    path.write_text(json.dumps(keys), encoding="utf-8")
+    if os.name != "nt":
+        try:  # and the keys file itself
+            os.chmod(path, 0o600)
+        except OSError:
+            pass
 
 def key_problem(service, value):
     """Why a pasted key can't be right for the service, or an empty string when it looks fine."""

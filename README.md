@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img alt="Platform: Windows 10/11" src="https://img.shields.io/badge/platform-Windows%2010%2F11-000000?style=flat-square&labelColor=000000&color=00ff41">
+  <img alt="Platform: Windows 10/11 and Linux" src="https://img.shields.io/badge/platform-Windows%2010%2F11%20%7C%20Linux-000000?style=flat-square&labelColor=000000&color=00ff41">
   <img alt="Python 3.13" src="https://img.shields.io/badge/python-3.13-000000?style=flat-square&labelColor=000000&color=00ff41">
   <img alt="159 tests passing" src="https://img.shields.io/badge/tests-159%20passing-000000?style=flat-square&labelColor=000000&color=00ff41">
   <img alt="Status: beta" src="https://img.shields.io/badge/status-beta-000000?style=flat-square&labelColor=000000&color=ffa31a">
@@ -28,10 +28,10 @@
 
 ## Why SpyBrain
 
-- **Local-first.** No account, no cloud, no server of ours in the middle. Reports, history and API keys stay on your PC (keys are encrypted with Windows DPAPI). Photo geolocation works offline after a one-time model download.
+- **Local-first.** No account, no cloud, no server of ours in the middle. Reports, history and API keys stay on your machine (on Windows keys are encrypted with DPAPI; on Linux and macOS they are kept in a file only your user account can read). Photo geolocation works offline after a one-time model download.
 - **Made for people who verify things.** Findings are leads, not proof. Every source reports its own status, one failing source never stops a scan, and every scan is saved as HTML, JSON and CSV.
 - **Guardrails built in.** Leaked passwords and breach records are never shown or saved. The password check sends only 5 characters of a hash. The optional face search is switched off in this build; when enabled it needs a stated purpose and refuses photos of children.
-- **A tool you want to open.** Black and terminal green, an animated radar, a dot-matrix world map. It respects the Windows setting for reduced animations.
+- **A tool you want to open.** Black and terminal green, an animated radar, a dot-matrix world map. On Windows it respects the system setting for reduced animations.
 
 ## What's inside
 
@@ -69,7 +69,9 @@ The password check uses the [Pwned Passwords](https://haveibeenpwned.com/Passwor
 
 ## Quick start
 
-Windows 10 or 11, Python 3.13 and Git.
+Python 3.13 and Git, on Windows 10/11 or Linux.
+
+### Windows
 
 ```powershell
 git clone https://github.com/skriptkiddy98x/spybrain.git
@@ -79,12 +81,30 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe app.py
 ```
 
-The first photo analysis downloads a 1.7 GB model once and prepares the places, which can take a few minutes. After that a photo takes about half a minute.
-
 - **Tests:** `.\.venv\Scripts\python.exe -m unittest discover -s tests -v` (159 tests).
 - **Command line:** `.\.venv\Scripts\python.exe osinthub.py example.org --fast`.
-- **PhoneInfoga:** optional, see [`bin/README.md`](bin/README.md).
 - **Build an EXE:** `powershell -ExecutionPolicy Bypass -File .\build.ps1` runs the tests and then PyInstaller (about 15 minutes, because of PyTorch). The result is not code-signed, so Windows SmartScreen may warn on first start.
+
+### Linux
+
+SpyBrain is a Qt desktop app, so a graphical session is needed to run the window (the command line runs anywhere). Install Python 3.13, Git and the Qt system libraries your distribution ships for PySide6 (for example on Debian/Ubuntu `sudo apt install python3.13-venv libgl1 libegl1 libxkbcommon0 libdbus-1-3`).
+
+```bash
+git clone https://github.com/skriptkiddy98x/spybrain.git
+cd spybrain
+python3.13 -m venv .venv
+.venv/bin/python -m pip install -r requirements-lock.txt
+./start.sh            # or: .venv/bin/python app.py
+```
+
+- **Tests:** `.venv/bin/python -m unittest discover -s tests -v` (159 tests).
+- **Command line:** `./osint.sh example.org --fast` (or `.venv/bin/python osinthub.py ...`).
+- **Build a bundle:** `./build.sh` runs the tests and then PyInstaller (about 15 minutes, because of PyTorch), producing `dist/SpyBrain/SpyBrain`.
+- Reports, keys and the model live under `~/.local/share/SpyBrain` (or `$XDG_DATA_HOME`).
+
+The first photo analysis downloads a 1.7 GB model once and prepares the places, which can take a few minutes. After that a photo takes about half a minute.
+
+- **PhoneInfoga:** optional, see [`bin/README.md`](bin/README.md).
 
 The full reference is in the [user guide](docs/USER-GUIDE.md).
 

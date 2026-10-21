@@ -9,7 +9,19 @@ from urllib.parse import urlsplit
 VERSION = "2.2.0"
 ROOT = Path(sys.executable if getattr(sys, "frozen", False) else __file__).resolve().parent
 ASSETS = Path(getattr(sys, "_MEIPASS", ROOT))
-APP_DIR = Path(os.environ.get("LOCALAPPDATA", str(ROOT))) / "SpyBrain"
+def _default_app_dir():
+    """Per-user data: reports (frozen build), API keys and the downloaded model.
+
+    Windows keeps these under %LOCALAPPDATA%; other platforms follow the XDG base
+    directory spec ($XDG_DATA_HOME, else ~/.local/share).
+    """
+    if os.name == "nt":
+        base = os.environ.get("LOCALAPPDATA") or str(ROOT)
+    else:
+        base = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
+    return Path(base) / "SpyBrain"
+
+APP_DIR = _default_app_dir()
 
 def _migrate_app_dir():
     """SpyBrain used to be called OSINT Hub; carry its reports, keys and model over once."""
