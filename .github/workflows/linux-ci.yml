@@ -1,0 +1,54 @@
+name: linux-ci
+
+# Verifies that SpyBrain's Linux support works on a real Linux host:
+# installs the locked dependencies, runs the full unit-test suite, and runs
+# the app's built-in headless GUI smoke test (--smoke-test).
+on:
+  push:
+    branches: [linux-support]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Tests + GUI smoke (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Qt offscreen system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libegl1 libgl1 libxkbcommon0 libdbus-1-3
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # CPU-only torch keeps the download small. If the pinned version isn't on the
+          # CPU index, the lockfile install below resolves torch from PyPI instead.
+          pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cpu \
+            || echo "CPU wheels unavailable for the pinned versions; the lockfile will resolve torch."
+          pip install -r requirements-lock.txt
+
+      - name: Unit tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m unittest discover -s tests -v
+
+      - name: GUI smoke test (headless)
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          python app.py --smoke-test smoke-out
+          echo "--- startup.json ---"
+          cat smoke-out/startup.json
+
+      - name: Upload smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-smoke
+          path: smoke-out

@@ -1,3 +1,13 @@
+# Unreleased
+
+- **Linux support.** SpyBrain now runs on Linux as well as Windows, from the same source.
+  - API keys: on Windows they stay encrypted with DPAPI; on Linux (and macOS) they are stored in `keys.dat` with `0600` permissions inside a `0700` data folder, readable only by your user account.
+  - Per-user data (API keys, the downloaded model, and reports for a built bundle) follows the XDG base directory spec on Linux — `$XDG_DATA_HOME`, else `~/.local/share/SpyBrain` — instead of `%LOCALAPPDATA%`.
+  - New `start.sh`, `osint.sh` and `build.sh` are the counterparts of `start.bat`, `osint.bat` and `build.ps1`. `SpyBrain.spec` now builds on Linux too (Windows-only steps are guarded; torchvision's `.so` libraries are bundled).
+  - `requirements-lock.txt` installs on Linux: the Windows-only `winloop` and `pywin32-ctypes` are marked `sys_platform == "win32"`.
+  - PhoneInfoga on Linux is the `phoneinfoga` binary (no extension); see `bin/README.md`.
+  - Windows behaviour is unchanged.
+
 # Changes in 2.2.0
 
 - The app is now called **SpyBrain** and is aimed at journalists, investigators and threat-intelligence teams. The first-start notice, the guide and the reports say it is for lawful, authorized investigations; "Search only yourself" is gone. Reports from the earlier OSINT Hub move to `%LOCALAPPDATA%\SpyBrain` on first start.

@@ -2,6 +2,7 @@
 # API keys, settings, models, build output, a virtual environment) can reach GitHub by accident.
 /*
 !/.gitignore
+!/.gitattributes
 !/README.md
 !/LICENSE
 !/CHANGELOG.md
@@ -11,12 +12,16 @@
 !/build.ps1
 !/start.bat
 !/osint.bat
+!/build.sh
+!/start.sh
+!/osint.sh
 !/requirements.txt
 !/requirements-lock.txt
 !/app.py
 !/osinthub.py
 !/geolocate.py
 !/leaks.py
+!/.github/
 !/assets/
 !/docs/
 !/licenses/
