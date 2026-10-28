@@ -8,6 +8,7 @@ from unittest.mock import patch
 from PIL import Image
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QImage
 import app
 
 class InterfaceTests(unittest.TestCase):
@@ -88,6 +89,26 @@ class InterfaceTests(unittest.TestCase):
         self.assertEqual(len(chart.nodes[0]["pins"]),2)
         self.assertEqual(self.window.count.value,2)
         self.window.chart.grab()
+
+    def test_link_chart_paints_after_long_uptime(self):
+        """Spinner angles come from time.monotonic() (uptime); QPainter.drawArc takes an int32 in 1/16 degree."""
+        for uptime in (573_393.0,40_000_000.0):
+            clock=[uptime]
+            with self.subTest(uptime=uptime),patch.object(app,"MOTION",True),patch.object(app.time,"monotonic",lambda:clock[0]):
+                chart=app.LinkChart()
+                chart.resize(900,420)
+                # render() into our own image: an exception in paintEvent then fails the test instead of aborting Qt.
+                image=QImage(chart.size(),QImage.Format.Format_ARGB32_Premultiplied)
+                chart.render(image)
+                chart.begin("example.org","domain")
+                chart.plan(["DNS","theHarvester"])
+                chart.report("DNS","running")
+                chart.render(image)
+                clock[0]+=2
+                chart.render(image)
+                chart.finish("complete")
+                chart.render(image)
+                chart.deleteLater()
 
     def test_rows_keep_source_order_until_sorted(self):
         rows=[{"category":c,"label":c,"value":c,"source":"Test","url":""} for c in ("DNS","Host","IP address")]

@@ -747,7 +747,8 @@ class LinkChart(QWidget):
                 p.drawEllipse(point, 8+18*passed/0.5, 8+18*passed/0.5)
         self.pins(p, c, point, node, now)
         if status == "running" and MOTION:
-            spin = now*240
+            # Wrap before scaling: drawArc takes an int32 in 1/16 degree and now is the uptime clock.
+            spin = (now*240) % 360
             box = QRectF(point.x()-13, point.y()-13, 26, 26)
             p.setPen(QPen(tint(SIGNAL, 0.85), 1.2))
             p.setBrush(Qt.BrushStyle.NoBrush)
@@ -796,7 +797,7 @@ class LinkChart(QWidget):
         p.drawEllipse(c, 105, 105)
         p.setBrush(Qt.BrushStyle.NoBrush)
         p.setPen(QPen(tint(ASH, 0.35*opacity), 1))
-        spin = now*14 if MOTION else 0
+        spin = (now*14) % 360 if MOTION else 0
         box = QRectF(c.x()-78, c.y()-78, 156, 156)
         for k in range(3):
             p.drawArc(box, int((spin+k*120)*16), 70*16)
@@ -815,7 +816,7 @@ class LinkChart(QWidget):
             tone = QColor(SIGNAL)
         else:
             tone = QColor(ALERT if self.result == "failed" else ASH if self.result == "cancelled" else BONE)
-        spin = now*(70 if live else 14) if MOTION else 0
+        spin = (now*(70 if live else 14)) % 360 if MOTION else 0
         if idle or lock < 1:
             self.watcher(p, c, now, 1.0 if idle else 1-lock)
         if not idle:

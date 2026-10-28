@@ -7,6 +7,7 @@
   - `requirements-lock.txt` installs on Linux: the Windows-only `winloop` and `pywin32-ctypes` are marked `sys_platform == "win32"`.
   - PhoneInfoga on Linux is the `phoneinfoga` binary (no extension); see `bin/README.md`.
   - Windows behaviour is unchanged.
+- Fixed: the Scan page no longer crashes during a scan once the computer has been running for about 6.5 days without a restart. The spinner angles on the link chart grew with the system uptime until they no longer fit the number Qt expects.
 
 # Changes in 2.2.0
 
